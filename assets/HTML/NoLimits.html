@@ -1,0 +1,142 @@
+<!DOCTYPE html>                             <!-- Indica que el documento es HTML5 -->
+<html lang="es">                            <!-- Idioma del documento: español -->
+<head>
+  <meta charset="UTF-8" />                  <!-- Codificación de caracteres (UTF-8 para acentos, ñ, etc.) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+                                            <!-- Ajusta la escala en móviles para diseño responsive -->
+  <title>NoLimits</title>                   <!-- Título de la pestaña del navegador -->
+  <link rel="stylesheet" href="../CSS/styles.css"/> 
+                                            <!-- Enlaza hoja de estilos externa -->
+</head>
+<body>
+  <header>
+    <h1 id="brand">NoLimits</h1>            <!-- Encabezado principal de la página -->
+  </header>
+
+  <!-- Carrusel principal -->
+  <section class="carousel" aria-label="Carrusel de NoLimits">
+    <div class="carousel-track">            <!-- Contenedor de slides que se mueven horizontalmente -->
+
+      <!-- Slide 1: Login -->
+      <div class="slide is-active">         <!-- Primer slide, activo por defecto -->
+        <img src="../img/slide1.jpeg" alt="Slide 1"/> 
+                                            <!-- Imagen de fondo del slide -->
+
+        <div class="card card--sm" role="region" aria-labelledby="titulo-login">
+                                            <!-- Tarjeta con formulario de login, accesible como región -->
+          <h2 id="titulo-login">Iniciar sesión</h2> <!-- Título de la sección login -->
+
+          <form id="formLogin" novalidate>  <!-- Formulario de login, sin validación HTML automática -->
+            <div class="field">             <!-- Campo de correo -->
+              <label for="login-correo">Correo</label>
+              <input id="login-correo" name="correo" type="email" 
+                     placeholder="tucorreo@ejemplo.com" required autocomplete="email"/>
+            </div>
+
+            <div class="field">             <!-- Campo de contraseña -->
+              <label for="login-pass">Contraseña</label>
+              <input id="login-pass" name="password" type="password" 
+                     placeholder="Tu contraseña" required minlength="6" autocomplete="current-password"/>
+            </div>
+
+            <div class="forgot">            <!-- Link para recuperar contraseña -->
+              <a href="#" id="forgot-link">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <div class="actions">           <!-- Botón de acción -->
+              <button type="submit" class="btn-primary">Entrar</button>
+            </div>
+
+            <p id="msgLogin" class="msg" aria-live="polite"></p>
+                                            <!-- Mensajes dinámicos (éxito/error) -->
+          </form>
+        </div>
+      </div>
+
+      <!-- Slide 2: Registro -->
+      <div class="slide">                   <!-- Segundo slide -->
+        <img src="../img/slide2.jpg" alt="Slide 2"/> <!-- Imagen de fondo -->
+
+        <div class="card" role="region" aria-labelledby="titulo-registro">
+                                            <!-- Tarjeta con formulario de registro -->
+          <h2 id="titulo-registro">Crear cuenta</h2> <!-- Título sección registro -->
+
+          <form id="formRegistro" novalidate> <!-- Formulario de registro -->
+            <div class="row">               <!-- Fila con 2 columnas (nombre/apellido) -->
+              <div class="field">
+                <label for="nombre">Nombres</label>
+                <input id="nombre" name="nombre" type="text" required minlength="2" 
+                       placeholder="Ej: Simon Scorpion" autocomplete="given-name"/>
+              </div>
+              <div class="field">
+                <label for="apellidos">Apellidos</label>
+                <input id="apellidos" name="apellidos" type="text" required minlength="2" 
+                       placeholder="Ej: Kaiak Hunter" autocomplete="family-name"/>
+              </div>
+            </div>
+
+            <div class="row">               <!-- Fila con correo y teléfono -->
+              <div class="field">
+                <label for="correo">Correo</label>
+                <input id="correo" name="correo" type="email" required 
+                       placeholder="tucorreo@gmail.com" autocomplete="email"/>
+              </div>
+              <div class="field">
+                <label for="telefono">Teléfono</label>
+                <input id="telefono" name="telefono" type="tel" 
+                       placeholder="+56 9 1234 5678" 
+                       pattern="^(\+?\d[\d\s\-]{7,})$" autocomplete="tel"/>
+              </div>
+            </div>
+
+            <div class="field">             <!-- Contraseña registro -->
+              <label for="password">Contraseña</label>
+              <input id="password" name="password" type="password" required minlength="6" 
+                     placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="btn-primary">Registrar usuario</button>
+            </div>
+
+            <p id="msgRegistro" class="msg" aria-live="polite"></p>
+                                            <!-- Mensajes dinámicos de registro -->
+          </form>
+        </div>
+      </div>
+
+      <!-- Slide 3: Soporte -->
+      <div class="slide">                   <!-- Tercer slide -->
+        <img src="../img/slide3.jpg" alt="Slide 3"/> <!-- Imagen de fondo -->
+
+        <div class="card card--sm soporte-card" role="region" aria-labelledby="titulo-soporte">
+                                            <!-- Tarjeta con info de soporte -->
+          <h2 id="titulo-soporte">Soporte NoLimits</h2>
+          <p class="intro-soporte">Si tienes algún problema, contáctanos:</p>
+
+          <div class="soporte">             <!-- Bloque de datos de contacto -->
+            <p><strong>📧 Correo:</strong> soporte@nolimits.com</p>
+            <p><strong>📞 Teléfono:</strong> +56 9 59687211</p>
+            <p><strong>💬 WhatsApp:</strong> 
+               <a href="https://wa.me/56959687211" target="_blank" rel="noopener">+56 9 59687211</a></p>
+            <p><strong>🌐 Web:</strong> 
+               <a href="https://www.nolimitsEJEMPLO.com" target="_blank" rel="noopener">www.nolimits.com</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controles del carrusel -->
+    <button class="nav prev" aria-label="Anterior">‹</button> <!-- Flecha izquierda -->
+    <button class="nav next" aria-label="Siguiente">›</button> <!-- Flecha derecha -->
+
+    <div class="dots" role="tablist" aria-label="Indicadores"> <!-- Puntos de navegación -->
+      <button class="dot is-active" aria-label="Ir al 1" data-index="0"></button>
+      <button class="dot" aria-label="Ir al 2" data-index="1"></button>
+      <button class="dot" aria-label="Ir al 3" data-index="2"></button>
+    </div>
+  </section>
+
+  <script src="../JS/this.js"></script>     <!-- Script de interactividad (carrusel, validaciones, etc.) -->
+</body>
+</html>

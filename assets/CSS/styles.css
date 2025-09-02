@@ -1,0 +1,362 @@
+/* Reset útil */                           /* Comentario: título del bloque */
+*,
+*::before,
+*::after { box-sizing: border-box; }      /* Incluye padding/borde dentro del width/height, evita cálculos raros */
+
+/* ===== Fondo global ===== */            /* Comentario: sección de estilos globales */
+body{
+  margin:0;                               /* Quita márgenes por defecto del body */
+  background:                             /* Define fondo compuesto (gradiente + imagen) */
+    linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.3)),  /* Capa oscura para contraste (de 50% a 30% opacidad) */
+    url("../img/fondo.png");              /* Imagen de fondo principal */
+  background-size: cover;                 /* La imagen cubre toda el área, recortando si es necesario */
+  background-repeat: no-repeat;           /* Evita que la imagen se repita */
+  background-attachment: fixed;           /* Efecto parallax: el fondo queda fijo al hacer scroll */
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Helvetica, Arial, sans-serif; /* Pila de fuentes */
+}
+
+/* Base (lo que ya tienes) */
+header h1{
+  color: transparent;                     /* El relleno del texto es transparente (solo borde + glow) */
+  -webkit-text-stroke: 3px #f700ffc0;     /* Trazo exterior del texto (3px, magenta translúcido) */
+  text-shadow:                             /* Brillos múltiples para efecto neon */
+      0 0 4px #021d96f2,                  /* Glow azul profundo cercano */
+      0 0 16px rgba(255,0,255,.70),       /* Glow magenta medio */
+      0 0 36px rgba(0,231,255,.55),       /* Glow cian amplio */
+      0 0 56px rgba(123,92,255,.45);      /* Glow violeta más extendido */
+  transition: text-shadow .3s ease, -webkit-text-stroke-color .3s ease; /* Suaviza cambios de glow y color de trazo */
+  text-align:center;                      /* Centra el texto del h1 */
+  font-size: clamp(2rem, 6vw, 5rem);      /* Tamaño fluido: mínimo 2rem, preferido 6vw, máximo 5rem */
+  margin: 40px 16px;                      /* Separación externa (arriba/abajo 40px, laterales 16px) */
+}
+
+/* Glow al acercar el cursor */
+header h1:hover{
+  -webkit-text-stroke-color: #ff4dec;     /* Cambia el color del trazo al pasar el mouse (magenta brillante) */
+  text-shadow:                            /* Reaplica el set de glows (puedes variarlo si quieres) */
+    0 0 4px #021d96f2,
+    0 0 16px rgba(255,0,255,.70),
+    0 0 36px rgba(0,231,255,.55),
+    0 0 56px rgba(123,92,255,.45);
+}
+
+/* ===== Carrusel ===== */
+.carousel{
+  position: relative;                     /* Necesario para posicionar ::before y controles absolutos */
+  width:100%;                             /* Ocupa todo el ancho disponible */
+  height:68vh;                            /* Altura relativa al viewport (68% del alto) */
+  max-width: 1000px;                      /* Limita el ancho máximo a 1000px */
+  overflow:hidden;                         /* Oculta contenido que se desborda (slides) */
+  margin: 0 auto 24px;                    /* Centra horizontalmente y agrega margen abajo */
+  border-radius:16px;                      /* Esquinas redondeadas del contenedor */
+  backdrop-filter: blur(2px);              /* Desenfoque de fondo detrás del carrusel (si el navegador lo soporta) */
+  border: 0;                               /* Sin borde visible (lo manejará ::before) */
+}
+
+/* Anillo de borde animado morado ↔ azul */
+.carousel::before{
+  content:"";                              /* Genera el pseudo-elemento */
+  position:absolute;                       /* Posiciona encima del carrusel */
+  inset:0;                                 /* Ocupa todo el contenedor (top/right/bottom/left: 0) */
+  border-radius: inherit;                  /* Mismo radio que el contenedor */
+  padding: 5px;                            /* Grosor del “anillo” (borde) */
+  background: linear-gradient(90deg, #6db8ff, #d100d8, #2e31c9); /* Gradiente tricolor */
+  background-size: 300% 100%;              /* Aumenta tamaño del gradiente para animarlo */
+  animation: gradientShift 6s linear infinite; /* Anima desplazamiento del gradiente */
+  -webkit-mask:                            /* Crea una máscara para simular borde hueco */
+    linear-gradient(#000 0 0) content-box, /* Parte visible: caja de contenido */
+    linear-gradient(#000 0 0);             /* Parte cubierta: borde exterior */
+  -webkit-mask-composite: xor;             /* Combina máscaras en WebKit para “recortar” centro */
+          mask-composite: exclude;         /* Equivalente estándar: excluye el centro */
+  pointer-events: none;                    /* No interfiere con los clics del usuario */
+  z-index: 2;                              /* Por encima de slides pero debajo de controles si aplica */
+}
+
+@keyframes gradientShift{
+  0%   { background-position:   0% 50%; } /* Posición inicial del gradiente */
+  50%  { background-position: 100% 50%; } /* Desplaza a la derecha */
+  100% { background-position:   0% 50%; } /* Vuelve al inicio para loop continuo */
+}
+
+.carousel-track{
+  display:flex;                            /* Alinea las slides en fila */
+  height:100%;                             /* Igual a la altura del carrusel */
+  transition: transform .6s cubic-bezier(.2,.8,.2,1); /* Suaviza el desplazamiento entre slides */
+  will-change: transform;                  /* Pista de optimización al navegador */
+}
+
+.slide{
+  position:relative;                       /* Para posicionar hijos (imagen) */
+  flex: 0 0 100%;                          /* Cada slide ocupa 100% del ancho del carrusel */
+  min-height: 420px;                       /* Altura mínima por si el vh queda chico */
+  display: flex;                           /* Centrado del contenido interno */
+  align-items: center;                     /* Centra verticalmente */
+  justify-content: center;                 /* Centra horizontalmente */
+}
+
+/* Imagen de fondo dentro del slide */
+.slide > img{
+  position:absolute;                       /* Se extiende detrás del contenido de la card */
+  inset:0;                                 /* Ocupa todo el slide */
+  width:100%;                              /* Ancho completo */
+  height:100%;                             /* Alto completo */
+  object-fit:cover;                        /* Recorta sin deformar la imagen */
+  filter: brightness(.6);                  /* Oscurece para mejorar contraste con la card */
+  z-index: 0;                              /* Queda detrás del contenido de la slide */
+}
+
+/* ===== Cards base ===== */
+.card {
+  position: relative;                      /* Para pseudo-elemento ::before y overlays */
+  z-index: 1;                              /* Encima de la imagen del slide */
+  width: min(770px, 95%);                  /* Ancho máximo 770px, si no 95% del contenedor */
+  min-height: 450px;                       /* Altura mínima de la tarjeta */
+  padding: clamp(16px,3vw,28px);           /* Padding fluido según ancho de viewport */
+  color: #e9efff;                          /* Texto en celeste muy claro */
+  background: linear-gradient(180deg, rgba(12,18,35,.75), rgba(10,14,28,.65)); /* Fondo glass oscuro */
+  border-radius: 18px;                     /* Esquinas redondeadas */
+  overflow: hidden;                        /* Recorta brillos internos/bordes */
+  border: 0;                               /* Sin borde nativo */
+  background-clip: padding-box;            /* El fondo no “pinta” el borde simulado */
+  backdrop-filter: blur(6px);              /* Efecto glass: difumina detrás */
+  box-shadow: 0 10px 40px rgba(0,0,0,.45); /* Sombra base */
+  transition: box-shadow .35s ease;        /* Suaviza cambio de sombras al hover */
+  text-align: center;                      /* Centra texto interno */
+}
+
+#nombre, #apellidos, #correo, #telefono, #password{
+    text-align: center;                    /* Centra texto dentro de esos inputs por ID */
+}
+
+/* Borde degradado (rosado → azul) */
+.card::before {
+  content: "";                             /* Pseudo-elemento para el borde “hueco” */
+  position: absolute;                      /* Se superpone a la card */
+  inset: 0;                                /* Ocupa todo el tamaño de la card */
+  border-radius: inherit;                  /* Mismo radio que la card */
+  padding: 2px;                            /* Grosor del borde simulado */
+  background: linear-gradient(90deg, #ff00cc, #00e7ff); /* Gradiente rosado→cian */
+  -webkit-mask:                            /* Máscara para dejar el centro transparente */
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;             /* Recorta el centro (WebKit) */
+          mask-composite: exclude;         /* Recorta el centro (estándar) */
+  pointer-events: none;                    /* No bloquea interacciones dentro de la card */
+  transition: background .35s ease;        /* Suaviza el swap de gradiente en hover */
+}
+
+/* Hover: invierte colores y agrega glow */
+.card:hover::before{
+  background: linear-gradient(90deg, #00e7ff, #ff00cc); /* Invierte gradiente cian→rosado */
+}
+.card:hover{
+  box-shadow:                              /* Aumenta brillo/halo en hover */
+    0 0 22px rgba(0,231,255,.35),
+    0 0 60px rgba(255,0,204,.25),
+    0 12px 48px rgba(0,0,0,.55);
+}
+
+/* ==== Borde con gradiente animado (Login y Soporte ahora) ==== */
+.card--sm {
+  position: relative;                      /* Igual que .card para pseudo-elementos */
+  width: min(520px, 95%);                  /* Más angosta que .card */
+  padding: clamp(16px, 3vw, 28px);         /* Padding fluido */
+  color: #e9efff;                          /* Texto claro */
+  background: linear-gradient(180deg, rgba(12,18,35,.85), rgba(10,14,28,.7)); /* Fondo glass más opaco */
+  border-radius: 32px;                     /* Esquinas más redondeadas */
+  overflow: hidden;                        /* Recorta brillos internos/bordes */
+  border: 0 !important;                    /* Asegura que no tenga borde nativo */
+  border-image: none !important;           /* Desactiva bordes por imágenes si existieran */
+  background-clip: padding-box;            /* Fondo no invade el borde simulado */
+  transition: box-shadow 0.4s ease;        /* Suaviza sombra en hover */
+  box-shadow: 0 10px 120px rgba(0,0,0,.45);/* Sombra más amplia */
+  text-align: center;                      /* Centra contenido */
+}
+
+#login-correo, #login-pass{
+    text-align: center;                    /* Centra texto en inputs de login por ID */
+}
+
+.card.card--sm:hover {
+  box-shadow:                              /* Halo más intenso en hover */
+    0 0 25px rgba(0,231,255,0.45),
+    0 0 100px rgba(255,0,204,0.35),
+    0 14px 48px rgba(0,0,0,.55);
+}
+
+.card--sm::before {
+  content: "";                             /* Pseudo-elemento para el borde */
+  position: absolute;                      /* Superpuesto a la card */
+  inset: 0;                                /* Ocupa todo el tamaño */
+  border-radius: inherit;                  /* Mismo radio */
+  padding: 2px;                            /* Grosor del borde simulado */
+  background: linear-gradient(to right, #ff00cc, #00e7ff); /* Gradiente horizontal rosado→cian */
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, /* Máscara para hacer el centro hueco */
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;             /* Recorte en WebKit */
+          mask-composite: exclude;         /* Recorte estándar */
+  pointer-events: none;                    /* No bloquea clics */
+  transition: background 0.6s ease;        /* Suaviza cambio de gradiente en hover */
+}
+
+.card--sm:hover::before {
+  background: linear-gradient(to right, #00e7ff, #ff00cc); /* Invierte gradiente en hover */
+}
+
+/* ==== Swap de efectos ==== */
+/* Slide 2 (Crear cuenta) -> degradado azul → rosado con swap al hover */
+.carousel .slide:nth-child(2) .card::before {
+  background: linear-gradient(to right, #00e7ff, #ff00cc); /* Por defecto cian→rosado en slide 2 */
+}
+.carousel .slide:nth-child(2) .card:hover::before {
+  background: linear-gradient(to right, #ff00cc, #00e7ff); /* Invierte al hover */
+}
+.carousel .slide:nth-child(2) .card:hover {
+  box-shadow:                              /* Ajusta colores del halo en hover para slide 2 */
+    0 0 22px rgba(255,0,204,.35),          /* Rosado */
+    0 0 60px rgba(0,231,255,.25),          /* Azul/cian */
+    0 12px 48px rgba(0,0,0,.55);
+}
+
+/* Slide 3 (Soporte) -> estilo Login (ya lo hereda de .card--sm) */
+.card--sm.soporte-card {
+  border: 0 !important;                    /* Asegura sin borde nativo */
+  background-clip: padding-box;            /* Mantiene el borde simulado limpio */
+
+  display: flex;                           /* Activa layout flex para centrar el contenido */
+  flex-direction: column;                  /* Apila elementos en columna */
+  justify-content: center;                 /* Centra verticalmente */
+  align-items: center;                     /* Centra horizontalmente */
+}
+#titulo-soporte{
+    padding-bottom: 30px;                  /* Espacio inferior bajo el título de soporte */
+}
+
+/* Texto soporte */
+.intro-soporte{ text-align:center; margin: 0 0 20px; } /* Centra y da margen inferior */
+.soporte{ text-align:center; font-size:1rem; color:#e9efff; } /* Bloque de texto soporte */
+.soporte p{ margin:8px 0; }                /* Espaciado vertical entre párrafos */
+.soporte a{ color:#00e7ff; text-decoration:none; } /* Links cian sin subrayado */
+.soporte a:hover{ color:#7b5cff; text-decoration:underline; } /* Hover violeta + subrayado */
+.soporte{padding-bottom: 30px;}            /* Extra espacio bajo el bloque soporte */
+
+/* Grid form */
+.row{
+  display:grid;                            /* Usará grid para el formulario */
+  gap: 28px;                               /* Separación entre celdas */
+  grid-template-columns: 1fr;              /* Por defecto: 1 columna */
+  margin-bottom: 16px;                     /* Espacio inferior del bloque grid */
+}
+@media (min-width:640px){
+  .row{ grid-template-columns: 0.9fr 1fr; }/* Desde 640px: 2 columnas desbalanceadas */
+}
+
+/* Fields */
+.field{ margin-bottom: 16px; }             /* Espacio inferior entre campos */
+.field label{
+  display:block;                           /* Ocupa toda la fila */
+  margin-bottom: 8px;                      /* Espacio respecto al input */
+  padding-top: 8px;                        /* Respiro superior */
+  font-size: .95rem;                       /* Tamaño levemente menor a 1rem */
+  color:#a8b6d8;                           /* Color gris azulado suave */
+}
+.field input{
+  width:100%;                              /* Input ocupa todo el ancho del contenedor */
+  padding:12px 12px;                       /* Relleno interno del input */
+  border-radius:14px;                      /* Esquinas redondeadas */
+  outline:none;                            /* Quita contorno azul del navegador */
+  border:1px solid rgba(255,255,255,.22);  /* Borde claro translúcido */
+  background: rgba(255,255,255,.06);       /* Fondo translúcido (glass) */
+  color:#e9efff;                           /* Texto claro */
+}
+.field input:focus{
+  border-color:#00e7ff;                    /* Borde cian al enfocar */
+  box-shadow: 0 0 0 3px rgba(0,231,255,.15); /* Halo cian suave como focus ring */
+}
+
+/* Botón */
+.actions{
+  display:flex;                            /* Contenedor flex para el botón */
+  justify-content:center;                  /* Centra el botón horizontalmente */
+  margin-top: 24px;                        /* Espacio por encima del botón */
+}
+.btn-primary{
+  padding: 16px 32px;                      /* Tamaño cómodo del botón */
+  font-size: 1.1rem;                       /* Letra un poco más grande */
+  border:0;                                /* Sin borde nativo */
+  border-radius:12px;                      /* Esquinas redondeadas */
+  cursor:pointer;                          /* Cursor mano al pasar */
+  font-weight:700;                         /* Texto en negrita */
+  color:#0b1020;                           /* Texto oscuro (contraste con gradiente) */
+  background: linear-gradient(90deg,#00e7ff,#7b5cff); /* Gradiente cian→violeta */
+  box-shadow: 0 8px 26px rgba(123,92,255,.35); /* Sombra con tinte violeta */
+}
+
+/* Mensajes */
+.msg{ margin-top:10px; font-size:.95rem; min-height: 1.2em; } /* Contenedor feedback debajo de inputs */
+.msg.ok{ color:#5ee6a8; }                  /* Mensaje de éxito (verde menta) */
+.msg.err{ color:#ff9aa2; }                 /* Mensaje de error (rosa pálido) */
+
+/* Forgot password */
+.forgot{
+  text-align:center;                       /* Centra el texto del enlace */
+  margin: 8px 0 8px;                       /* Márgenes verticales */
+}
+.forgot a{
+  font-size: .9rem;                        /* Tamaño algo menor */
+  color: #00e7ff;                          /* Color del enlace */
+  text-decoration: none;                   /* Sin subrayado por defecto */
+  transition: color .2s ease;              /* Suaviza cambio de color en hover */
+}
+.forgot a:hover{
+  color: #7b5cff;                          /* Cambia a violeta al hover */
+  text-decoration: underline;              /* Subraya al hover */
+}
+
+/* Flechas */
+.nav{
+  position:absolute;                       /* Se posicionan dentro del carrusel */
+  top:50%;                                 /* Verticalmente centradas */
+  transform:translateY(-50%);              /* Ajuste fino al centro exacto */
+  width:48px; 
+  height:48px; 
+  border-radius:12px;                      /* Botón redondeado */
+  border:1px solid rgba(255,255,255,.25);  /* Borde claro translúcido */
+  background: rgba(0,0,0,.35);             /* Fondo oscuro translúcido */
+  color:#fff;                              /* Icono/flecha en blanco */
+  font-size:2rem;                          /* Tamaño grande del icono */
+  cursor:pointer;                          /* Cursor mano */
+  z-index:3;                               /* Por encima de anillo y slides */
+  padding-bottom: 8px;                     /* Ajuste de alineación del icono */
+  padding-left: 5px;                       /* Ajuste horizontal del icono */
+}
+.nav:hover{ background: rgba(0,0,0,.5); }  /* Oscurece un poco al pasar el mouse */
+.nav.prev{ left:30px; }                     /* Flecha izquierda: separación del borde */
+.nav.next{ right:30px; }                    /* Flecha derecha: separación del borde */
+
+/* Dots */
+.dots{
+  position:absolute;                       /* Posicionados sobre el carrusel */
+  left:50%;                                /* Centra horizontalmente */
+  transform:translateX(-50%);              /* Ajuste fino al centro */
+  bottom:22px;                             /* Separación del borde inferior */
+  display:flex;                            /* Alinea puntitos en fila */
+  gap:8px;                                 /* Espacio entre puntitos */
+  z-index:3;                               /* Encima del contenido */
+}
+.dot{
+  width:10px; 
+  height:13px; 
+  border-radius:50%;                       /* Puntito circular */
+  border:1px solid rgba(255,255,255,.25);  /* Borde translúcido */
+  background: rgba(255,255,255,.35);       /* Fondo gris claro translúcido */
+  cursor:pointer;                          /* Clickable para navegar */
+}
+.dot.is-active{ background: linear-gradient(90deg,#00e7ff,#7b5cff); } /* Dot activo con gradiente */
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce){
+  .carousel-track{ transition:none; }      /* Quita animaciones del track */
+  .nav, .dot{ transition:none; }           /* Quita transiciones de controles */
+}
